@@ -1,6 +1,6 @@
-from flask import Flask , request
+from flask import Flask, request , current_app
 from flask_restful import Resource , Api , reqparse
-from flask_jwt import JWT , jwt_required
+from flask_jwt import JWT, jwt_required
 from security import authenticate , identity
 from user import UserRegister
 
@@ -20,12 +20,12 @@ class Item(Resource):
                         help='This field cannot be left blank'
                         )
 
-    data = parser.parse_args()
+    #data = parser.parse_args()
     @jwt_required()
     def get(self , name):
         #next returns the first value returned by filter function
-        item = next(filter( lambda x: x['name'] == name , items))
-        return {'item':None} , 200 if item else 404
+        item = next(filter( lambda x: x['name'] == name , items)) #filter is used instead of for loop
+        return {'item':item} , 200 if item else 404
 
 
 #while using flask restful we dont need to do jsonify as it already does that
@@ -75,6 +75,4 @@ api.add_resource(ItemList , '/items')
 api.add_resource(Item , '/item/<string:name>')
 api.add_resource(UserRegister , '/register')
 
-#app.run( port = 5000 , debug=True)
-if __name__ == '__main__':
-    app.run(debug=True)
+app.run( port = 5000 , debug=True)
