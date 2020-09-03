@@ -20,4 +20,8 @@ api.add_resource(ItemList , '/items')
 api.add_resource(Item , '/item/<string:name>')
 api.add_resource(UserRegister , '/register')
 
-app.run( port = 5000 , debug=True)
+if __name__ == '__main__':
+
+    app.run( port = 5000 , debug=True)
+#this prevents from error and app.run will work only if it is run as primary
+#but not called from other file
