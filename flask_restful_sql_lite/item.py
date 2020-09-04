@@ -47,15 +47,25 @@ class Item(Resource):
 
         data = Item.parser.parse_args()
         item = {'name':name , 'price':data['price']}
+
+        try:
+            self.insert(item)
+        except:
+            return {"message":"an error occured inserting an item"} , 500 #internal server error
+
+
+
+        return item , 201 #201 code for creating
+
+    @classmethod
+    def insert(cls , item):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
 
-        query="INSERT INTO items VALUES (?,?)"
-        cursor.execute(query,(item['name'],item['price']))
+        query = "INSERT INTO items VALUES (?,?)"
+        cursor.execute(query, (item['name'], item['price']))
         connection.commit()
         connection.close()
-
-        return item , 201 #201 code for creating
 
     def delete(self, name):
         connection = sqlite3.connect('data.db')
