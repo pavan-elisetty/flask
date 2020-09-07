@@ -8,7 +8,7 @@ from resources.item import Item , ItemList
 
 
 app = Flask(__name__)
-app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app.secret_key = 'jose'
 api = Api(app)
 
@@ -21,7 +21,8 @@ api.add_resource(Item , '/item/<string:name>')
 api.add_resource(UserRegister , '/register')
 
 if __name__ == '__main__':
-
+    from db import db
+    db.init_app(app)
     app.run( port = 5000 , debug=True)
 #this prevents from error and app.run will work only if it is run as primary
 #but not called from other file
