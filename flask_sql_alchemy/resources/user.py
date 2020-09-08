@@ -24,15 +24,8 @@ class UserRegister(Resource):
             return {'message':'A user with that username already exists'}
 
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = "INSERT INTO users VALUES (NULL , ? , ?)" #here in Null it will auto increment
-        cursor.execute(query , (data['username'] , data['password'],))
-
-        connection.commit()
-        connection.close()
-
+        user = UserModel(**data)
+        user.save_to_db()
         return {"message": "user created sucessfully"} , 201 #201 for created
 
 
