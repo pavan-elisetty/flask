@@ -1,7 +1,15 @@
 from werkzeug.security import safe_str_cmp
-from flask_jwt_extended import create_refresh_token,create_access_token
+from flask_jwt_extended import (
+    create_refresh_token,
+    create_access_token,
+    jwt_refresh_token_required,
+    get_jwt_identity,
+    jwt_required,
+    get_raw_jwt
+)
 from flask_restful import Resource , reqparse
 from models.user import UserModel
+from blacklist import BLACKLIST
 #getting data from json payload
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('username',
@@ -78,3 +86,18 @@ class UserLogin(Resource):
         #refresh item
 
 
+class UserLogout(Resource):
+    @jwt_required
+    def post(self): #blacklisting their current jwt so as to achieve logout
+        jti =  get_raw_jwt()['jti'] #jti is JWT ID , a unique identifier for a JWT
+        BLACKLIST.add(jti)
+        return {'message':'successfully logged out'},200
+
+
+
+class TokenRefresh(Resource):
+    @jwt_refresh_token_required #we need to have a refresh token or it returns error
+    def post(self):
+        current_user =get_jwt_identity() #it works with both access and refresh tokens
+        new_token = create_access_token(identity=current_user , fresh=False)
+        return {'access_token':new_token},200
